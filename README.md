@@ -77,7 +77,8 @@ docker build --build-arg TMDB_V3_API_KEY=<your-api-key> -t netflix .
 
 docker run -d --name netflix -p 8081:80 netflix:latest
 ```
-open port 8081 to access the Netflix-clone app
+open port 8081 to access the Netflix-clone app  
+
 **Phase 2: Security**
 
 1. **Install SonarQube and Trivy:**
