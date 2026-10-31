@@ -97,10 +97,10 @@ open port 8081 to access the Netflix-clone app
         To install Trivy:
         ```
         sudo apt-get install wget gnupg
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-sudo apt-get update
-sudo apt-get install trivy        
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+        echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install trivy        
         ```
         
         to scan image using trivy
@@ -108,7 +108,8 @@ sudo apt-get install trivy
         trivy image <imageid>
         ```
         
-        
+Analyse the output
+
 2. **Integrate SonarQube and Configure:**
     - Integrate SonarQube with your CI/CD pipeline.
     - Configure SonarQube to analyze code for quality and security issues.
@@ -159,12 +160,25 @@ Install below plugins
 
 ### **Configure Java and Nodejs in Global Tool Configuration**
 
-Goto Manage Jenkins → Tools → Install JDK(17) and NodeJs(16)→ Click on Apply and Save
-
+Goto Manage Jenkins → Tools → Install JDK(21) and NodeJs(20)→ Click on Apply and Save
 
 ### SonarQube
 
-Create the token
+After you login  click on your Administrator Account profile
+> myAccount → security → generate token
+Name:jenkins-sonar 
+Type:user token
+expires:30days
+//copy this token and save it .it will be used to authenticate jenkins with sonar)
+
+Next you will create a webhook connection that will point back to  your jenkins instance  form sonar to share results of the analysis
+
+On your Sonarqube panel 
+Go to Administration → Configuration → Webhooks
+//Create a new webhook and name your webhook 
+The url section should point to your jenkins server 
+http://jenkinsipaddress:8080/sonarqube-webhook/
+
 
 Goto Jenkins Dashboard → Manage Jenkins → Credentials → Add Secret Text. It should look like this
 
@@ -187,8 +201,8 @@ Create a Jenkins webhook
 pipeline {
     agent any
     tools {
-        jdk 'jdk17'
-        nodejs 'node16'
+        jdk 'Java21'
+        nodejs 'node20'
     }
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
@@ -201,7 +215,7 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/N4si/DevSecOps-Project.git'
+                git branch: 'main', url: 'https://github.com/ProfAkymbo/DevSecOps-Project.git'
             }
         }
         stage("Sonarqube Analysis") {
